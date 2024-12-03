@@ -53,8 +53,8 @@ class Program
         Console.WriteLine(asset);
         int i = 0;
         foreach(var price in closingPrices){
-            i++;
             Console.WriteLine($"{i}. {price}");
+            i++;
         }
         Console.WriteLine(closingPrices.Count);
 
@@ -65,7 +65,7 @@ class Program
         decimal suma = 0;
         for (int i = 0; i < periodos; i++)
         {
-            suma += closingPrices[indiceDeComienzo + i];
+            suma += closingPrices[closingPrices.Count - (periodos*2) + i];
         }
         return suma / periodos;
     }
@@ -78,7 +78,7 @@ class Program
         for (int i = 0; i < periodos; i++)
         {
             ema = (alpha * closingPrices[closingPrices.Count - periodos + i]) + ((1 - alpha) * ema);
-        }
+        }   
 
         return ema;
     }
