@@ -17,7 +17,7 @@ class Program
         var historicalClient = Environments.Paper.GetAlpacaDataClient(new SecretKey(apiKey, apiSecret));
 
         //accion a evaluar
-        string asset = "TSLA";
+        string asset = "AAPL";
 
         //requerido para usar funciones
         var func = new Program();
@@ -29,6 +29,7 @@ class Program
 
         int longPeriod = 50;
         int shortPeriod = 12;
+        int periodosRSI = 14;
 
         //obtener 100 datos de cierre
         int initialPeriod = longPeriod*3;
@@ -53,6 +54,9 @@ class Program
         decimal longEMA = func.calculateEMA(longSMA, longPeriod, closingPrices);
         decimal shortEMA = func.calculateEMA(shortSMA, shortPeriod, closingPrices);
 
+        //obtener el RSI
+        decimal rsi = func.calculateRSI(closingPrices, periodosRSI);
+
         Console.WriteLine($"{longEMA}");
         Console.WriteLine($"{shortEMA}");
 
@@ -63,8 +67,7 @@ class Program
             i++;
         }
         Console.WriteLine(closingPrices.Count);
-
-        
+      
     }
     public decimal calculateSMA(List<decimal> closingPrices, int periodos, int indiceDeComienzo = 0)
     {
@@ -87,5 +90,33 @@ class Program
         }   
 
         return ema;
+    }
+
+    public decimal calculateRSI(List<decimal> closingPrices, int periodos)
+    {
+        decimal ganancia = 0;
+        decimal perdida = 0;
+        decimal mediaG;
+        decimal mediaP;
+        decimal variacion;
+
+        for (int i = 0; i < periodos - 1; i++)
+        {
+            variacion = closingPrices[closingPrices.Count - periodos + 1 + i] - closingPrices[closingPrices.Count - periodos + i];
+
+            if (variacion > 0)
+            {
+                ganancia += variacion;
+            }
+            else if (variacion < 0)
+            {
+                perdida += Math.Abs(variacion);
+            };
+        }
+
+        mediaG = ganancia / periodos;
+        mediaP = perdida / periodos;
+
+        return 100 - 100 / (1 + mediaG / mediaP);
     }
 }
