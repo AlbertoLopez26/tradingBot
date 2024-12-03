@@ -27,28 +27,34 @@ class Program
         y con los ultimos 50 calcular la EMA 
         */
 
-        int longEMA = 50;
+        int longPeriod = 50;
+        int shortPeriod = 12;
 
         //obtener 100 datos de cierre
-        int initialPeriod = longEMA*3;
+        int initialPeriod = longPeriod*3;
         var startDate = DateTime.Now.AddDays(-initialPeriod);
         var endDate = DateTime.Now.AddMinutes(-15);
         var historicalBars = await historicalClient.ListHistoricalBarsAsync(new HistoricalBarsRequest(asset, startDate, endDate, BarTimeFrame.Day));
         var closingPrices = historicalBars.Items.Select(bar => bar.Close).ToList();
         
         //Ciclo para asegurar por lo menos 100 valores
-        while (closingPrices.Count < longEMA*2){
+        while (closingPrices.Count < longPeriod*2){
             initialPeriod += 10;
             startDate = DateTime.Now.AddDays(-initialPeriod);
             historicalBars = await historicalClient.ListHistoricalBarsAsync(new HistoricalBarsRequest(asset, startDate, endDate, BarTimeFrame.Day));
             closingPrices = historicalBars.Items.Select(bar => bar.Close).ToList();
         }
 
-        //obtener SMA
-        decimal sma = func.calculateSMA(closingPrices, longEMA);
+        //obtener las SMAs
+        decimal longSMA = func.calculateSMA(closingPrices, longPeriod);
+        decimal shortSMA = func.calculateSMA(closingPrices, shortPeriod);
 
-        //obtener EMA
-        decimal ema = func.calculateEMA(sma, longEMA, closingPrices);
+        //obtener las EMAs
+        decimal longEMA = func.calculateEMA(longSMA, longPeriod, closingPrices);
+        decimal shortEMA = func.calculateEMA(shortSMA, shortPeriod, closingPrices);
+
+        Console.WriteLine($"{longEMA}");
+        Console.WriteLine($"{shortEMA}");
 
         Console.WriteLine(asset);
         int i = 0;
