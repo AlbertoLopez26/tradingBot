@@ -57,16 +57,27 @@ class Program
         //obtener el RSI
         decimal rsi = func.calculateRSI(closingPrices, periodosRSI);
 
-        Console.WriteLine($"{longEMA}");
-        Console.WriteLine($"{shortEMA}");
+        /* - Si la EMA corta esta por debajo de la EMA larga y el RSI por debajo de 20: 
+            indica que el precio esta debajo del promedio y hay sobreventa del activo.
+            Oportunidad para COMPRAR
 
-        Console.WriteLine(asset);
-        int i = 0;
-        foreach(var price in closingPrices){
-            Console.WriteLine($"{i}. {price}");
-            i++;
+            - Si la EMA corta esta por arriba de la EMA larga y el RSI por arriba del 80:
+            indica que el precio esta arriba del promedio y hay sobrecompra del activo.
+            Oportunidad para VENDER  
+        */
+
+        if(shortEMA<longEMA && rsi<20)
+        {
+            Console.WriteLine("Oportunidad de compra");
         }
-        Console.WriteLine(closingPrices.Count);
+        else if(shortEMA>longEMA && rsi>80)
+        {
+            Console.WriteLine("Oportunidad de venta");
+        }
+        else
+        {
+            Console.WriteLine("Ninguna oportunidad por el momento");
+        }
       
     }
     public decimal calculateSMA(List<decimal> closingPrices, int periodos, int indiceDeComienzo = 0)
