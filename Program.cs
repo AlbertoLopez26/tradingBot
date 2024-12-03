@@ -7,6 +7,23 @@ class Program
 {
     static async Task Main(string[] args)
     {
+        // Rutas de carpetas y archivos
+        string buyDirectory = @"C:\Trading\alerts\compra";
+        string sellDirectory = @"C:\Trading\alerts\venta";
+        string assetsPath = @"C:\Trading\assets.txt";
+
+        // Si no existen crearlos
+        if(!Directory.Exists(buyDirectory)){
+            Directory.CreateDirectory(buyDirectory);
+            Directory.CreateDirectory(sellDirectory);
+        }
+
+        // Si no existe el archivo de texto para las acciones crearlo
+        if(!File.Exists(assetsPath))
+        {
+            File.Create(assetsPath);
+        }
+
         // Credenciales para el uso de la api
         var apiKey = "PK006K12UPB7S7B470CU";
         var apiSecret = "wIzVu3ZPPD1RoFt3ELcgKenV6TRsMhzfuJgpUUn7";
