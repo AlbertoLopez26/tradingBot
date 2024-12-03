@@ -44,6 +44,11 @@ class Program
             closingPrices = historicalBars.Items.Select(bar => bar.Close).ToList();
         }
 
+        //obtener SMA
+        decimal sma = func.calculateSMA(closingPrices, longEMA);
+
+        //obtener EMA
+        decimal ema = func.calculateEMA(sma, longEMA, closingPrices);
 
         Console.WriteLine(asset);
         int i = 0;
@@ -53,8 +58,6 @@ class Program
         }
         Console.WriteLine(closingPrices.Count);
 
-        decimal sma = func.calculateSMA(closingPrices, longEMA);
-        Console.WriteLine(sma);
         
     }
     public decimal calculateSMA(List<decimal> closingPrices, int periodos, int indiceDeComienzo = 0)
@@ -63,8 +66,20 @@ class Program
         for (int i = 0; i < periodos; i++)
         {
             suma += closingPrices[indiceDeComienzo + i];
-            Console.WriteLine($"{i}. {closingPrices[indiceDeComienzo + i]}");
         }
         return suma / periodos;
+    }
+
+    public decimal calculateEMA(decimal sma, int periodos, List<decimal> closingPrices)
+    {
+        decimal alpha = 10m / (periodos + 1m);
+        decimal ema = sma;
+
+        for (int i = 0; i < periodos; i++)
+        {
+            ema = (alpha * closingPrices[closingPrices.Count - periodos + i]) + ((1 - alpha) * ema);
+        }
+
+        return ema;
     }
 }
