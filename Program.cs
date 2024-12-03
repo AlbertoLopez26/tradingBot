@@ -1,5 +1,7 @@
 ﻿using System.ComponentModel;
+using System.Security.Cryptography.X509Certificates;
 using Alpaca.Markets;
+using Microsoft.VisualBasic;
 
 class Program
 {
@@ -17,18 +19,31 @@ class Program
         //accion a evaluar
         string asset = "TSLA";
 
-        //obtener 50 datos de cierre
-        var startDate = DateTime.Now.AddDays(-60);
+        //requerido para usar funciones
+        var func = new Program();
+
+        /* 
+        Se requieren 100 datos de cierre para calcular la sma con los primeros 50
+        y con los ultimos 50 calcular la EMA 
+        */
+
+        int longEMA = 50;
+
+        //obtener 100 datos de cierre
+        int initialPeriod = longEMA*3;
+        var startDate = DateTime.Now.AddDays(-initialPeriod);
         var endDate = DateTime.Now.AddMinutes(-15);
         var historicalBars = await historicalClient.ListHistoricalBarsAsync(new HistoricalBarsRequest(asset, startDate, endDate, BarTimeFrame.Day));
         var closingPrices = historicalBars.Items.Select(bar => bar.Close).ToList();
-        int initialPeriod = 60;
-        while (closingPrices.Count < 50){
+        
+        //Ciclo para asegurar por lo menos 100 valores
+        while (closingPrices.Count < longEMA*2){
             initialPeriod += 10;
             startDate = DateTime.Now.AddDays(-initialPeriod);
             historicalBars = await historicalClient.ListHistoricalBarsAsync(new HistoricalBarsRequest(asset, startDate, endDate, BarTimeFrame.Day));
             closingPrices = historicalBars.Items.Select(bar => bar.Close).ToList();
         }
+
 
         Console.WriteLine(asset);
         int i = 0;
@@ -38,7 +53,18 @@ class Program
         }
         Console.WriteLine(closingPrices.Count);
 
+        decimal sma = func.calculateSMA(closingPrices, longEMA);
+        Console.WriteLine(sma);
         
     }
-
+    public decimal calculateSMA(List<decimal> closingPrices, int periodos, int indiceDeComienzo = 0)
+    {
+        decimal suma = 0;
+        for (int i = 0; i < periodos; i++)
+        {
+            suma += closingPrices[indiceDeComienzo + i];
+            Console.WriteLine($"{i}. {closingPrices[indiceDeComienzo + i]}");
+        }
+        return suma / periodos;
+    }
 }
