@@ -13,13 +13,14 @@ class Program
         string assetsPath = @"C:\Trading\assets.txt";
 
         // Si no existen crearlos
-        if(!Directory.Exists(buyDirectory)){
+        if (!Directory.Exists(buyDirectory))
+        {
             Directory.CreateDirectory(buyDirectory);
             Directory.CreateDirectory(sellDirectory);
         }
 
         // Si no existe el archivo de texto para las acciones crearlo
-        if(!File.Exists(assetsPath))
+        if (!File.Exists(assetsPath))
         {
             File.Create(assetsPath);
         }
@@ -33,83 +34,86 @@ class Program
         // Este cliente sirve para solictar datos historicos.
         var historicalClient = Environments.Paper.GetAlpacaDataClient(new SecretKey(apiKey, apiSecret));
 
-        // accion a evaluar
-        string asset = "AAPL";
-
         // leer archivo con acciones a analizar y crear una lista con ellas
         List<string> assetList = [.. File.ReadLines(assetsPath)];
 
-        foreach (string a in assetList){
-            Console.WriteLine(a);
-        }
-
-        //requerido para usar funciones
+        // requerido para usar funciones
         var func = new Program();
 
-        /* 
-        Se requieren 100 datos de cierre para calcular la sma con los primeros 50
-        y con los ultimos 50 calcular la EMA 
-        */
-
+        // El la EMA larga es de 50 dias mientras que la corta es de 12 dias
+        // el periodo para el rsi es de 14 dias.
         int longPeriod = 50;
         int shortPeriod = 12;
         int periodosRSI = 14;
 
-        //obtener 100 datos de cierre
-        int initialPeriod = longPeriod*3;
-        var startDate = DateTime.Now.AddDays(-initialPeriod);
-        var endDate = DateTime.Now.AddMinutes(-15);
-        var historicalBars = await historicalClient.ListHistoricalBarsAsync(new HistoricalBarsRequest(asset, startDate, endDate, BarTimeFrame.Day));
-        var closingPrices = historicalBars.Items.Select(bar => bar.Close).ToList();
-        
-        //Ciclo para asegurar por lo menos 100 valores
-        while (closingPrices.Count < longPeriod*2){
-            initialPeriod += 10;
-            startDate = DateTime.Now.AddDays(-initialPeriod);
-            historicalBars = await historicalClient.ListHistoricalBarsAsync(new HistoricalBarsRequest(asset, startDate, endDate, BarTimeFrame.Day));
-            closingPrices = historicalBars.Items.Select(bar => bar.Close).ToList();
-        }
+        // Ciclo para el analisis de cada una de las acciones ubicadas en el archivo assets.txt
+        foreach (string asset in assetList)
+        {
+            /* 
+            Se requieren 100 datos de cierre para calcular la sma con los primeros 50
+            y con los ultimos 50 calcular la EMA 
+            */
 
-        //obtener las SMAs
-        decimal longSMA = func.calculateSMA(closingPrices, longPeriod);
-        decimal shortSMA = func.calculateSMA(closingPrices, shortPeriod);
+            //obtener 100 datos de cierre
+            int initialPeriod = longPeriod * 3;
+            var startDate = DateTime.Now.AddDays(-initialPeriod);
+            var endDate = DateTime.Now.AddMinutes(-16);
+            var historicalBars = await historicalClient.ListHistoricalBarsAsync(new HistoricalBarsRequest(asset, startDate, endDate, BarTimeFrame.Day));
+            var closingPrices = historicalBars.Items.Select(bar => bar.Close).ToList();
 
-        //obtener las EMAs
-        decimal longEMA = func.calculateEMA(longSMA, longPeriod, closingPrices);
-        decimal shortEMA = func.calculateEMA(shortSMA, shortPeriod, closingPrices);
+            //Ciclo para asegurar por lo menos 100 valores
+            while (closingPrices.Count < longPeriod * 2)
+            {
+                initialPeriod += 10;
+                startDate = DateTime.Now.AddDays(-initialPeriod);
+                historicalBars = await historicalClient.ListHistoricalBarsAsync(new HistoricalBarsRequest(asset, startDate, endDate, BarTimeFrame.Day));
+                closingPrices = historicalBars.Items.Select(bar => bar.Close).ToList();
+            }
 
-        //obtener el RSI
-        decimal rsi = func.calculateRSI(closingPrices, periodosRSI);
+            //obtener las SMAs
+            decimal longSMA = func.calculateSMA(closingPrices, longPeriod);
+            decimal shortSMA = func.calculateSMA(closingPrices, shortPeriod);
 
-        /* - Si la EMA corta esta por debajo de la EMA larga y el RSI por debajo de 20: 
+            //obtener las EMAs
+            decimal longEMA = func.calculateEMA(longSMA, longPeriod, closingPrices);
+            decimal shortEMA = func.calculateEMA(shortSMA, shortPeriod, closingPrices);
+
+            //obtener el RSI
+            decimal rsi = func.calculateRSI(closingPrices, periodosRSI);
+
+            /* 
+            - Si la EMA corta esta por debajo de la EMA larga y el RSI por debajo de 20: 
             indica que el precio esta debajo del promedio y hay sobreventa del activo.
             Oportunidad para COMPRAR
 
             - Si la EMA corta esta por arriba de la EMA larga y el RSI por arriba del 80:
             indica que el precio esta arriba del promedio y hay sobrecompra del activo.
             Oportunidad para VENDER  
-        */
+            */
 
-        if(shortEMA<longEMA && rsi<20)
-        {
-            Console.WriteLine("Oportunidad de compra");
+            if (shortEMA < longEMA && rsi < 20)
+            {
+                // Acciones para alertas de compra
+                Console.WriteLine($"Oportunidad de compra para {asset}");
+            }
+            else if (shortEMA > longEMA && rsi > 80)
+            {
+                // Acciones para alerta de venta
+                Console.WriteLine($"Oportunidad de venta para {asset}");
+            }
+            else
+            {
+                // Acciones para ninguna alerta
+                Console.WriteLine($"Ninguna oportunidad por el momento para {asset}");
+            }
         }
-        else if(shortEMA>longEMA && rsi>80)
-        {
-            Console.WriteLine("Oportunidad de venta");
-        }
-        else
-        {
-            Console.WriteLine("Ninguna oportunidad por el momento");
-        }
-      
     }
     public decimal calculateSMA(List<decimal> closingPrices, int periodos, int indiceDeComienzo = 0)
     {
         decimal suma = 0;
         for (int i = 0; i < periodos; i++)
         {
-            suma += closingPrices[closingPrices.Count - (periodos*2) + i];
+            suma += closingPrices[closingPrices.Count - (periodos * 2) + i];
         }
         return suma / periodos;
     }
@@ -122,7 +126,7 @@ class Program
         for (int i = 0; i < periodos; i++)
         {
             ema = (alpha * closingPrices[closingPrices.Count - periodos + i]) + ((1 - alpha) * ema);
-        }   
+        }
 
         return ema;
     }
