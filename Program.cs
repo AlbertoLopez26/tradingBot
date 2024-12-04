@@ -94,20 +94,27 @@ class Program
             if (shortEMA < longEMA && rsi < 20)
             {
                 // Acciones para alertas de compra
-                Console.WriteLine($"Oportunidad de compra para {asset}");
+                // 1. Generar nombre de archivo donde se va a agregar la informacion de compra.
+                string buyAlertPath = $"{buyDirectory}" + @"\" + $"{asset}.txt";
+                // 2. Obtener la ultima cotizacion.
+                var lastQuote = await historicalClient.GetLatestQuoteAsync(new LatestMarketDataRequest(asset));
+                // 3. llamar a la funcion que crea el archivo de texto.
+                func.createAlertTxt(buyAlertPath, asset, "buy", closingPrices[closingPrices.Count-1], lastQuote.AskPrice);
             }
             else if (shortEMA > longEMA && rsi > 80)
             {
-                // Acciones para alerta de venta
-                Console.WriteLine($"Oportunidad de venta para {asset}");
-            }
-            else
-            {
-                // Acciones para ninguna alerta
-                Console.WriteLine($"Ninguna oportunidad por el momento para {asset}");
+                // Acciones para alertas de compra
+                // 1. Generar nombre de archivo donde se va a agregar la informacion de compra.
+                string sellAlertPath = $"{sellDirectory}" + @"\" + $"{asset}.txt";
+                // 2. Obtener la ultima cotizacion.
+                var lastQuote = await historicalClient.GetLatestQuoteAsync(new LatestMarketDataRequest(asset));
+                // 3. llamar a la funcion que crea el archivo de texto.
+                func.createAlertTxt(sellAlertPath, asset, "sell", closingPrices[closingPrices.Count-1], lastQuote.BidPrice);
             }
         }
     }
+
+    // Funcion para calcular la media movil simple
     public decimal calculateSMA(List<decimal> closingPrices, int periodos, int indiceDeComienzo = 0)
     {
         decimal suma = 0;
@@ -118,6 +125,7 @@ class Program
         return suma / periodos;
     }
 
+    // Funcion para calcular la media movil exponencial
     public decimal calculateEMA(decimal sma, int periodos, List<decimal> closingPrices)
     {
         decimal alpha = 10m / (periodos + 1m);
@@ -131,6 +139,7 @@ class Program
         return ema;
     }
 
+    // Funcion para calcular el RSI
     public decimal calculateRSI(List<decimal> closingPrices, int periodos)
     {
         decimal ganancia = 0;
@@ -157,5 +166,48 @@ class Program
         mediaP = perdida / periodos;
 
         return 100 - 100 / (1 + mediaG / mediaP);
+    }
+
+
+    // Funcion para crear el archivo de texto para cada una de las acciones en  las que se presente una alerta
+    public void createAlertTxt(string alertPath, string asset, string buyOrSell, decimal closingPrices, decimal lastQuote)
+    {
+        // Si el archivo no existe se crea y se le da un formato para hacer mas entendible la informacion
+        if(!File.Exists(alertPath))
+        {
+            File.AppendAllText(alertPath,"--------------------------------------------------------------------------------------\n");
+            File.AppendAllText(alertPath,$"------------------------------------------{asset}----------------------------------------\n");
+            File.AppendAllText(alertPath,"--------------------------------------------------------------------------------------\n");
+            File.AppendAllText(alertPath,"Oportunity".PadRight(20));
+            File.AppendAllText(alertPath,"Last Closing".PadRight(20));
+            File.AppendAllText(alertPath,"ask/bid".PadRight(20));
+            File.AppendAllText(alertPath,"Date".PadRight(20));
+            File.AppendAllText(alertPath,"\n");
+        }
+
+        /*
+        Se verifica si la alerta es de compra o venta, en ambos casos se plasma informacion
+        como el tipo de alerta, el ultimo precio de cierre, el ultimo precio ofertado o demandado
+        y por ultimo la fecha.
+        */
+
+        // Si la alerta es de compra se indica y se obtiene el ultimpo precio demandado.
+        if(buyOrSell == "buy")
+        {
+            File.AppendAllText(alertPath,"Buy".PadRight(20));
+            File.AppendAllText(alertPath,$"{closingPrices}".PadRight(20));
+            File.AppendAllText(alertPath,$"{lastQuote}".PadRight(20));
+            File.AppendAllText(alertPath,$"{DateTime.Now}".PadRight(20));
+            File.AppendAllText(alertPath,"\n");
+        }
+        // Si la alerta es de venta se indica y se obtiene el ultimo precio ofertado.
+        else if(buyOrSell == "sell")
+        {
+            File.AppendAllText(alertPath,"Sell".PadRight(20));
+            File.AppendAllText(alertPath,$"{closingPrices}".PadRight(20));
+            File.AppendAllText(alertPath,$"{lastQuote}".PadRight(20));
+            File.AppendAllText(alertPath,$"{DateTime.Now}".PadRight(20));
+            File.AppendAllText(alertPath,"\n");
+        }
     }
 }
