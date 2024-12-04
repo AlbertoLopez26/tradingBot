@@ -25,16 +25,23 @@ class Program
         }
 
         // Credenciales para el uso de la api
-        var apiKey = "PK006K12UPB7S7B470CU";
-        var apiSecret = "wIzVu3ZPPD1RoFt3ELcgKenV6TRsMhzfuJgpUUn7";
+        string apiKey = "PK006K12UPB7S7B470CU";
+        string apiSecret = "wIzVu3ZPPD1RoFt3ELcgKenV6TRsMhzfuJgpUUn7";
 
         // Este cliente sirve para colocar ordenes de compra venta Etc.
         var alpacaClient = Environments.Paper.GetAlpacaTradingClient(new SecretKey(apiKey, apiSecret));
         // Este cliente sirve para solictar datos historicos.
         var historicalClient = Environments.Paper.GetAlpacaDataClient(new SecretKey(apiKey, apiSecret));
 
-        //accion a evaluar
+        // accion a evaluar
         string asset = "AAPL";
+
+        // leer archivo con acciones a analizar y crear una lista con ellas
+        List<string> assetList = [.. File.ReadLines(assetsPath)];
+
+        foreach (string a in assetList){
+            Console.WriteLine(a);
+        }
 
         //requerido para usar funciones
         var func = new Program();

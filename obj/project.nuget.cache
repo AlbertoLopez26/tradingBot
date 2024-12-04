@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "tRBKGTxhCQU=",
+  "dgSpecHash": "VQddnZ4JPp8=",
   "success": true,
-  "projectFilePath": "C:\\Users\\Alberto L\\OneDrive\\Documentos\\TradingAlerts\\tradingV3\\tradingv3\\tradingv3.csproj",
+  "projectFilePath": "C:\\Users\\Alberto L\\OneDrive\\Documentos\\TradingAlerts\\TradingV3\\tradingv3\\tradingv3.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Alberto L\\.nuget\\packages\\alpaca.markets\\7.1.4\\alpaca.markets.7.1.4.nupkg.sha512",
     "C:\\Users\\Alberto L\\.nuget\\packages\\newtonsoft.json\\13.0.3\\newtonsoft.json.13.0.3.nupkg.sha512",

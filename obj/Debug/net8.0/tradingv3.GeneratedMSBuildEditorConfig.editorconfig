@@ -8,6 +8,6 @@ build_property.PlatformNeutralAssembly =
 build_property.EnforceExtendedAnalyzerRules = 
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = tradingv3
-build_property.ProjectDir = C:\Users\Alberto L\OneDrive\Documentos\TradingAlerts\tradingV3\tradingv3\
+build_property.ProjectDir = C:\Users\Alberto L\OneDrive\Documentos\TradingAlerts\TradingV3\tradingv3\
 build_property.EnableComHosting = 
 build_property.EnableGeneratedComInterfaceComImportInterop = 

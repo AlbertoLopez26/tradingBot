@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Alberto L\\OneDrive\\Documentos\\TradingAlerts\\tradingV3\\tradingv3\\tradingv3.csproj": {}
+    "C:\\Users\\Alberto L\\OneDrive\\Documentos\\TradingAlerts\\TradingV3\\tradingv3\\tradingv3.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Alberto L\\OneDrive\\Documentos\\TradingAlerts\\tradingV3\\tradingv3\\tradingv3.csproj": {
+    "C:\\Users\\Alberto L\\OneDrive\\Documentos\\TradingAlerts\\TradingV3\\tradingv3\\tradingv3.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Alberto L\\OneDrive\\Documentos\\TradingAlerts\\tradingV3\\tradingv3\\tradingv3.csproj",
+        "projectUniqueName": "C:\\Users\\Alberto L\\OneDrive\\Documentos\\TradingAlerts\\TradingV3\\tradingv3\\tradingv3.csproj",
         "projectName": "tradingv3",
-        "projectPath": "C:\\Users\\Alberto L\\OneDrive\\Documentos\\TradingAlerts\\tradingV3\\tradingv3\\tradingv3.csproj",
+        "projectPath": "C:\\Users\\Alberto L\\OneDrive\\Documentos\\TradingAlerts\\TradingV3\\tradingv3\\tradingv3.csproj",
         "packagesPath": "C:\\Users\\Alberto L\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Alberto L\\OneDrive\\Documentos\\TradingAlerts\\tradingV3\\tradingv3\\obj\\",
+        "outputPath": "C:\\Users\\Alberto L\\OneDrive\\Documentos\\TradingAlerts\\TradingV3\\tradingv3\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\Alberto L\\AppData\\Roaming\\NuGet\\NuGet.Config",
