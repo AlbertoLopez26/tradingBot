@@ -26,8 +26,8 @@ class Program
         }
 
         // Credenciales para el uso de la api
-        string apiKey = "PK006K12UPB7S7B470CU";
-        string apiSecret = "wIzVu3ZPPD1RoFt3ELcgKenV6TRsMhzfuJgpUUn7";
+        string apiKey = "apikey";
+        string apiSecret = "apiSecret";
 
         // Este cliente sirve para colocar ordenes de compra venta Etc.
         var alpacaClient = Environments.Paper.GetAlpacaTradingClient(new SecretKey(apiKey, apiSecret));
